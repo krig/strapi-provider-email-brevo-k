@@ -1,5 +1,3 @@
-import assert from 'node:assert';
-
 interface ProviderOptions {
   apiKey: string;
   apiUrl: string;
@@ -27,7 +25,9 @@ interface SendOptions {
 
 export default {
   init: (providerOptions: ProviderOptions, settings: Settings) => {
-    assert(providerOptions.apiKey, "Brevo API key is required");
+    if (!providerOptions.apiKey) {
+      throw new Error("Brevo API key is required");
+    }
     const url = providerOptions.apiUrl ?? 'https://api.brevo.com/v3/smtp/email';
     return {
       async send(options: SendOptions) {

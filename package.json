@@ -1,10 +1,13 @@
 {
   "name": "@k-ziran/strapi-provider-email-brevo-k",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Strapi email provider for Brevo",
-  "type": "commonjs",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "build": "tsc"
   },
