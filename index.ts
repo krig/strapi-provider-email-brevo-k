@@ -7,7 +7,9 @@ interface ProviderOptions {
 
 interface Settings {
   defaultFrom: string;
+  defaultFromName: string;
   defaultReplyTo: string;
+  defaultReplyToName: string;
 }
 
 interface SendOptions {
@@ -21,16 +23,6 @@ interface SendOptions {
   html: string;
   templateId?: number;
   [key: string]: unknown;
-}
-
-const splitMail = (mail: string) => {
-  if (mail.match(/<(.*?)>/g)) {
-    const matches = mail.match(/(.*?)<(.*?)>/g)?.map((a) => a.replace(/<|>/g, ""));
-    if (matches) {
-      return { name: matches[0], email: matches[1] };
-    }
-  }
-  return { email: mail };
 }
 
 export default {
@@ -51,9 +43,15 @@ export default {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                replyTo: splitMail(replyTo ?? settings.defaultReplyTo),
-                sender: splitMail(from ?? settings.defaultFrom),
-                to: [ splitMail(to) ],
+                replyTo: {
+                  name: settings.defaultReplyToName,
+                  email: replyTo ?? settings.defaultReplyTo,
+                },
+                sender: {
+                  name: settings.defaultFromName,
+                  email: from ?? settings.defaultFrom,
+                },
+                to: [ { email: to } ],
                 templateId,
                 params: rest,
               }),
@@ -73,11 +71,17 @@ export default {
               },
               body: JSON.stringify({
                 htmlContent: html,
-                replyTo: splitMail(replyTo ?? settings.defaultReplyTo),
-                sender: splitMail(from ?? settings.defaultFrom),
+                replyTo: {
+                  name: settings.defaultReplyToName,
+                  email: replyTo ?? settings.defaultReplyTo,
+                },
+                sender: {
+                  name: settings.defaultFromName,
+                  email: from ?? settings.defaultFrom,
+                },
+                to: [ { email: to } ],
                 subject,
                 textContent: text,
-                to: [ splitMail(to) ],
                 ...rest,
               }),
             });

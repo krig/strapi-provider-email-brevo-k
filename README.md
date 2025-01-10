@@ -7,12 +7,14 @@ module.exports = ({ env }) => ({
   // ...
   email: {
     config: {
-      provider: 'brevo-k',
+      provider: 'strapi-provider-email-brevo-k',
       providerOptions: {
         apiKey: env('BREVO_API_KEY'),
       },
       settings: {
+        defaultFromName: 'My Name',
         defaultFrom: 'myemail@brevo.com',
+        defaultReplyToName: 'My Name',
         defaultReplyTo: 'myemail@brevo.com',
       },
     },
