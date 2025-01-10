@@ -7,7 +7,7 @@ module.exports = ({ env }) => ({
   // ...
   email: {
     config: {
-      provider: 'strapi-provider-email-brevo-k',
+      provider: '@k-ziran/strapi-provider-email-brevo-k',
       providerOptions: {
         apiKey: env('BREVO_API_KEY'),
       },
