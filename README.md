@@ -1,5 +1,12 @@
 # Strapi email provider for Brevo
 
+Note: This plugin should be considered experimental until 1.0.0 is released.
+
+Why use this and not `strapi-provider-email-brevo`?
+
+- Handle sender name and email in a more correct way
+- Send templated email using Brevo mail templates
+
 ## Example configuration
 
 ```js
