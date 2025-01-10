@@ -19,6 +19,7 @@ interface SendOptions {
   subject: string;
   text: string;
   html: string;
+  templateId?: number;
   [key: string]: unknown;
 }
 
@@ -38,11 +39,10 @@ export default {
     const url = providerOptions.apiUrl ?? 'https://api.brevo.com/v3/smtp/email';
     return {
       async send(options: SendOptions) {
-        const { from, to, replyTo, subject, text, html, ...rest } = options;
+        const { from, to, replyTo, subject, text, html, templateId, ...rest } = options;
 
         try {
-          if ('templateId' in rest) {
-            const { templateId, ...params } = rest;
+          if (templateId) {
             const response = await fetch(url, {
               method: 'POST',
               headers: {
@@ -55,7 +55,7 @@ export default {
                 sender: splitMail(from ?? settings.defaultFrom),
                 to: [ splitMail(to) ],
                 templateId,
-                params,
+                params: rest,
               }),
             });
             if (!response.ok) {
