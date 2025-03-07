@@ -12,7 +12,7 @@ interface Settings {
 
 interface SendOptions {
   from?: string;
-  to: string;
+  to: string | string[];
   cc: string;
   bcc: string;
   replyTo?: string;
@@ -40,7 +40,7 @@ const init = (providerOptions: ProviderOptions, settings: Settings) => {
           name: settings.defaultFromName,
           email: from ?? settings.defaultFrom,
         },
-        to: [{ email: to }],
+        to: Array.isArray(to) ? to.map(email => ({ email })) : [{ email: to }],
       };
 
       if (templateId) {
