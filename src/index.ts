@@ -29,74 +29,50 @@ const init = (providerOptions: ProviderOptions, settings: Settings) => {
   }
   const url = providerOptions.apiUrl ?? 'https://api.brevo.com/v3/smtp/email';
   return {
-    send(options: SendOptions): Promise<void> {
-      return new Promise((resolve, reject) => {
-        const { from, to, replyTo, subject, text, html, templateId, ...rest } = options;
+    send: async (options: SendOptions) => {
+      const { from, to, replyTo, subject, text, html, templateId, ...rest } = options;
+      let body: Record<string, any> = {
+        replyTo: {
+          name: settings.defaultReplyToName,
+          email: replyTo ?? settings.defaultReplyTo,
+        },
+        sender: {
+          name: settings.defaultFromName,
+          email: from ?? settings.defaultFrom,
+        },
+        to: [{ email: to }],
+      };
 
-        if (templateId) {
-          fetch(url, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'API-Key': providerOptions.apiKey,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              replyTo: {
-                name: settings.defaultReplyToName,
-                email: replyTo ?? settings.defaultReplyTo,
-              },
-              sender: {
-                name: settings.defaultFromName,
-                email: from ?? settings.defaultFrom,
-              },
-              to: [{ email: to }],
-              templateId,
-              params: rest,
-            }),
-          }).then(response => {
-            if (!response.ok) {
-              console.error(`Brevo mailer templateId=${templateId}: got response ${response.status}`);
-            }
-            resolve();
-          }).catch(err => {
-            console.error('Brevo mailer: error', err);
-            reject();
-          });
-        } else {
-          fetch(url, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'API-Key': providerOptions.apiKey,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              htmlContent: html,
-              replyTo: {
-                name: settings.defaultReplyToName,
-                email: replyTo ?? settings.defaultReplyTo,
-              },
-              sender: {
-                name: settings.defaultFromName,
-                email: from ?? settings.defaultFrom,
-              },
-              to: [{ email: to }],
-              subject,
-              textContent: text,
-              ...rest,
-            }),
-          }).then(response => {
-            if (!response.ok) {
-              console.error(`Brevo mailer templateId=${templateId}: got response ${response.status}`);
-            }
-            resolve();
-          }).catch(err => {
-            console.error('Brevo mailer: error', err);
-            reject();
-          });
-        }
+      if (templateId) {
+        body = {
+          ...body,
+          templateId,
+          params: rest,
+        };
+      } else {
+        body = {
+          ...body,
+          subject,
+          htmlContent: html,
+          textContent: text,
+          ...rest,
+        };
+      }
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'API-Key': providerOptions.apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
+      if (!response.ok) {
+        console.error(`Brevo mailer body=${body}: got response ${response.status}`);
+        console.log(`Error: ${await response.text()}`);
+      } else {
+        console.log(`OK: ${await response.text()}`);
+      }
     },
   };
 };
