@@ -47,7 +47,12 @@ const init = (providerOptions: ProviderOptions, settings: Settings) => {
         body = {
           ...body,
           templateId,
-          params: rest,
+          params: {
+            ...(subject ? { subject } : {}),
+            ...(text ? { text } : {}),
+            ...(html ? { html } : {}),
+            ...rest,
+          },
         };
       } else {
         body = {
